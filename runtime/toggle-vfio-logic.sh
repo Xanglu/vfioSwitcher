@@ -25,7 +25,7 @@ load_runtime_config() {
 detect_display_manager() {
     # Pick the first known display manager unit that exists on the system.
     systemctl list-units --type=service --all |
-        grep -E 'gdm|sddm|lightdm|display-manager' |
+        grep -E 'gdm|sddm|lightdm|display-manager|plasmalogin' |
         awk '{print $1}' |
         head -n 1 |
         sed 's/[^a-zA-Z._-]//g'
@@ -409,7 +409,10 @@ switch_to_host() {
 
     echo "[4/4] Loading Host drivers..."
     if grep -i "0x10de" /sys/bus/pci/devices/"$GPU_ID"/vendor >/dev/null 2>&1; then
-        modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm
+        modprobe nvidia
+        modprobe nvidia_modeset
+        modprobe nvidia_uvm
+        modprobe nvidia_drm modeset=1
     elif grep -i "0x1002" /sys/bus/pci/devices/"$GPU_ID"/vendor >/dev/null 2>&1; then
         modprobe amdgpu
     fi
